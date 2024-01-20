@@ -1,21 +1,37 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
+  <div class="register-container">
+    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
         <h1 class="title" style="font-size: 36px;">人体姿态预测模型训练平台</h1>
-        <h3 class="title">系统登陆</h3>
+        <h3 class="title">账号注册</h3>
       </div>
-
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
+          <span style="color: white;margin-left: 15px">用户名</span>
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
+          v-model="registerForm.username"
           placeholder="用户名"
           name="username"
+          type="text"
+          tabindex="1"
+          autocomplete="on"
+        />
+      </el-form-item>
+
+      <el-form-item prop="mail">
+        <span class="svg-container">
+          <svg-icon icon-class="message" />
+          <span style="color: white;margin-left: 15px">邮箱</span>
+        </span>
+        <el-input
+          ref="username"
+          v-model="registerForm.mail"
+          placeholder="邮箱"
+          name="mail"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -26,11 +42,12 @@
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
+            <span style="color: white;margin-left: 15px">密码</span>
           </span>
           <el-input
             :key="passwordType"
             ref="password"
-            v-model="loginForm.password"
+            v-model="registerForm.password"
             :type="passwordType"
             placeholder="密码"
             name="password"
@@ -38,7 +55,7 @@
             autocomplete="on"
             @keyup.native="checkCapslock"
             @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
+            @keyup.enter.native="handleregister"
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
@@ -46,13 +63,33 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:20px;" @click.native.prevent="handleLogin">登陆</el-button>
+      <el-tooltip v-model="capsTooltip" content="大写锁定已打开" placement="right" manual>
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+            <span style="color: white;margin-left: 15px">确认密码</span>
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="registerForm.password"
+            :type="passwordType"
+            placeholder="密码"
+            name="password"
+            tabindex="2"
+            autocomplete="on"
+            @keyup.native="checkCapslock"
+            @blur="capsTooltip = false"
+            @keyup.enter.native="handleRegister"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+      </el-tooltip>
 
-      <div style="position:relative">
+      <el-button :loading="loading" type="danger" style="width:100%;margin-bottom:20px;" @click.native.prevent="handleRegister">注册</el-button>
 
-        <el-button :loading="loading" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">注册</el-button>
-
-      </div>
     </el-form>
 
     <el-dialog title="Or connect with" :visible.sync="showDialog">
@@ -67,11 +104,10 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import SocialSign from './components/SocialSignin'
 
 export default {
-  name: 'Login',
-  components: { SocialSign },
+  name: 'Register',
+  components: {},
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -88,11 +124,11 @@ export default {
       }
     }
     return {
-      loginForm: {
+      registerForm: {
         username: 'admin',
         password: '111111'
       },
-      loginRules: {
+      registerRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
@@ -120,9 +156,9 @@ export default {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    if (this.loginForm.username === '') {
+    if (this.registerForm.username === '') {
       this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
+    } else if (this.registerForm.password === '') {
       this.$refs.password.focus()
     }
   },
@@ -144,26 +180,9 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
     handleRegister() {
-      this.$router.push('/register')
+      this.$message('注册成功')
+      this.$router.push('/login')
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
@@ -183,7 +202,7 @@ export default {
     //     const type = codeMap[this.auth_type]
     //     const codeName = code[type]
     //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+    //       this.$store.dispatch('registerByThirdparty', codeName).then(() => {
     //         this.$router.push({ path: this.redirect || '/' })
     //       })
     //     } else {
@@ -199,22 +218,22 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
+$bg: #006eff;
 $light_gray:#fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
+  .register-container .el-input input {
     color: $cursor;
   }
 }
 
 /* reset element-ui css */
-.login-container {
+.register-container {
   .el-input {
     display: inline-block;
     height: 47px;
-    width: 85%;
+    width: 50%;
 
     input {
       background: transparent;
@@ -243,17 +262,17 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #0081ff;
+$dark_gray: #000000;
+$light_gray: #ffffff;
 
-.login-container {
+.register-container {
   min-height: 100%;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
 
-  .login-form {
+  .register-form {
     position: relative;
     width: 520px;
     max-width: 100%;
@@ -278,7 +297,7 @@ $light_gray:#eee;
     padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
-    width: 30px;
+    width: 150px;
     display: inline-block;
   }
 
