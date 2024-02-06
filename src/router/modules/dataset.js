@@ -14,13 +14,13 @@ const dataSetRouter = {
   children: [
     {
       path: 'multi-scale',
-      component: () => import('@/views/table/complex-table'),
+      component: () => import('@/views/table/scale-dataset-table'),
       name: '多尺度数据集',
       meta: { title: '多尺度数据集' }
     },
     {
       path: 'multi-model',
-      component: () => import('@/views/table/complex-table'),
+      component: () => import('@/views/table/modality-dataset-table'),
       name: '多模态数据集',
       meta: { title: '多模态数据集' }
     }

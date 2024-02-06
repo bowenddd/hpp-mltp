@@ -14,19 +14,19 @@ const taskRouter = {
   children: [
     {
       path: 'list',
-      component: () => import('@/views/table/complex-table'),
+      component: () => import('@/views/table/task-table'),
       name: '任务列表',
       meta: { title: '任务列表' }
     },
     {
       path: 'train',
-      component: () => import('@/views/table/drag-table'),
+      component: () => import('@/views/model/train'),
       name: '模型训练',
       meta: { title: '模型训练' }
     },
     {
       path: 'inference',
-      component: () => import('@/views/table/inline-edit-table'),
+      component: () => import('@/views/model/inference'),
       name: '模型推理',
       meta: { title: '模型推理' }
     }
